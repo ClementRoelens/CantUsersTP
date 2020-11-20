@@ -24,7 +24,7 @@
             {{ user.wallet }}
         </td>
         <td class="edit">
-            <input (keyup)="getAmount($event)" type="text">
+            <input (keyup)="getAmount($event)" type="text" #amount>
             <button (click)="edit($event,user.id,'+')">
                +
             </button>

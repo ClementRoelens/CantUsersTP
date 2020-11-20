@@ -52,7 +52,6 @@ export class AppComponent implements OnInit {
       this.dataService.editWallet(userId, operation, this.amountToTransmit).subscribe((res: User) => {
         let index = this.users.findIndex(user => user.id == userId);
         this.users[index] = res;
-        // this.users[userId] = res;
       });
     }
     // Si la valeur est vide, c'est que l'utilisateur n'a pas saisi de nombre, et on lui indique
