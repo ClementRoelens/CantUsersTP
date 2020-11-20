@@ -119,6 +119,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "CantUsersTP"
+    }
+  },
+  "defaultProject": "CantUsersTP",
+  "cli": {
+    "analytics": false
+  }
 }
