@@ -43,6 +43,7 @@ export class DataService {
     else {
       request = this.http.post(API + "/user/debit/" + user + "?amount=" + amount, options, { headers: options.headers });
     }
+    console.log(request);
     return request;
   }
 

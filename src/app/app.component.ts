@@ -64,7 +64,6 @@ export class AppComponent implements OnInit {
       // On donne maintenant une position à toolTip, à côté du tableau
       toolTip.style.top = event.target.getBoundingClientRect().top-3+"px";
       if (event.target.innerText === "+"){
-        console.log("getBoundmachin.left = "+event.target.getBoundingClientRect().left);
         toolTip.style.left = event.target.getBoundingClientRect().left+70+"px";
       }
       else{
@@ -91,7 +90,6 @@ export class AppComponent implements OnInit {
     let value = parseFloat(event.target.value);
     if (!isNaN(value)){
       this.amountToTransmit = event.target.value;
-      console.log(parseFloat(event.target.value));
     }
     else{
       this.amountToTransmit = null;
