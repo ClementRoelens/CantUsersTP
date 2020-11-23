@@ -9,8 +9,12 @@
         <th>
             Solde
         </th>
-        <th>
+        <th id="edit_th">
             Créditer/débiter
+        </th>
+        <th id="space">
+        </th>
+        <th id="tooltip_th">
         </th>
     </tr>
     <tr *ngFor="let user of users">
@@ -31,6 +35,11 @@
             <button (click)="edit($event,user.id,'-')">
                 -
             </button>
+        </td>
+        <td class="space">
+        </td>
+        <td class="tooltip">
+
         </td>
     </tr>
 </table>

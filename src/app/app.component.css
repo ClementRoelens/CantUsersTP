@@ -1,15 +1,43 @@
 table {
-    width:500px;
-    margin:auto;
-    border:solid 1px black;
+    width:750px;
+    margin-left:calc(50% - 287px);
     border-collapse: collapse;
 }
 
 td, th {
     border:solid 1px black;
     margin:5px 0px 5px 0px;
-    width:100px;
-    height:25px;
+    width:90px;
+    height:44px;
+    padding:3px;
+}
+
+#edit_th, .edit {
+    width:150px;
+}
+
+#space,.space{
+    width:5px;
+    margin:0px;
+    padding:0px;
+    border:none;
+}
+
+#tooltip_th{
+    width:264px;
+    border:none;
+    text-align:center;
+}
+
+.tooltip{
+    border:white;
+    border-radius:3px;
+    background-color: rgb(200, 200, 200);
+    font-size:0.9em;
+    padding:5px;
+    opacity:0;
+    transition : opacity 1s;
+    margin-left:3px;
 }
 
 input {
