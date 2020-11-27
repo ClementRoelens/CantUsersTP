@@ -17,7 +17,7 @@
         <th id="tooltip_th">
         </th>
     </tr>
-    <tr *ngFor="let user of users">
+    <tr *ngFor="let user of users;let index = index">
         <td>
             {{ user.name }}
         </td>
@@ -28,11 +28,11 @@
             {{ user.wallet }}
         </td>
         <td class="edit">
-            <input (keyup)="getAmount($event)" type="text" #amount>
-            <button (click)="edit($event,user.id,'+')">
+            <input (keyup)="getAmount($event,index)" type="text" #amount>
+            <button (click)="edit($event,user.id,'+',index)">
                +
             </button>
-            <button (click)="edit($event,user.id,'-')">
+            <button (click)="edit($event,user.id,'-',index)">
                 -
             </button>
         </td>

@@ -12,7 +12,7 @@ import { User } from './interfaces';
 export class AppComponent implements OnInit {
 
   users: User[] = [];
-  amountToTransmit: number = null;
+  amountToTransmit: number[] = [];
   // Notre template affichera "En chargement" tant que ce booléen sera faux, via la directive ngIf
   dataReceived : boolean = false;
   numberToolTipId : number = 0;
@@ -42,27 +42,33 @@ export class AppComponent implements OnInit {
     this.dataService.getAllUsers().subscribe((res: User[]) => {
       this.users = res;
       this.dataReceived = true;
+      this.users.forEach(user => {
+        this.amountToTransmit.push(null);
+      });
     });
   }
 
-  edit(event:any, userId:number, operation:string) {
+  edit(event:any, userId:number, operation:string, index:number) {
     // La vérification de l'input se fait au moment où amountToTransmit est affectée, dans la fonction getAmount() se déclenchant à la saisie
     // Ici, on vérifie donc que cette valeur n'est pas vide avant d'envoyer la requête
-    if (this.amountToTransmit) {
+    if (this.amountToTransmit[index]) {
       // On cherche l'index de l'utilisateur correspondant (grâce à la réponse du serveur) et on va l'utiliser pour certaines opérations
       let index = this.users.findIndex(user => user.id == userId);
       // On vérifie que, dans le cas où l'opération est un débit, la porte-feuille ne soit pas négatif (l'API renverrait une erreur de toute manière)
-      if (((this.users[index].wallet - this.amountToTransmit) < 0) && (operation === "-")) {
-        // Dans ce cas, on indique cette nécessité
+      if (((this.users[index].wallet - this.amountToTransmit[index]) < 0) && (operation === "-")) {
+        // Dans ce cas, on indique cette nécessité (bien entendu seulement si le message n'est pas déjà affiché)
         let tooltip = event.target.parentNode.parentNode.lastElementChild;
-        let textNode = document.createTextNode("Vous ne pouvez pas être à découvert, veuillez entrer un montant à débiter moins élevé");
-        tooltip.append(textNode);
-        setTimeout(() => { tooltip.style.opacity = "1" }, 1);
-        setTimeout(() => { tooltip.style.opacity = "0" }, 2001);
-        setTimeout(() => { tooltip.removeChild(tooltip.firstChild) }, 3001);
+        if (tooltip.childNodes.length === 0){
+          let textNode = document.createTextNode("Vous ne pouvez pas être à découvert, veuillez entrer un montant à débiter moins élevé");
+          tooltip.append(textNode);
+          setTimeout(() => { tooltip.style.opacity = "1" }, 1);
+          setTimeout(() => { tooltip.style.opacity = "0" }, 2001);
+          setTimeout(() => { tooltip.removeChild(tooltip.firstChild) }, 3001);
+        }
+        
       }
       else{
-        this.dataService.editWallet(userId, operation, this.amountToTransmit).subscribe((res: User) => {
+        this.dataService.editWallet(userId, operation, this.amountToTransmit[index]).subscribe((res: User) => {
           // Une fois la requête envoyée et la réponse reçue, on modifie notre variable users et cela modifiera automatiquement le DOM
 
           // Mais d'abord, on va désactiver les boutons car on va afficher un message dans une petite animation de 3 secondes
@@ -72,7 +78,7 @@ export class AppComponent implements OnInit {
 
           // Ensuite va afficher le message de validation dans l'élément créé à cet effet
           let tooltip = event.target.parentNode.parentNode.lastElementChild;
-          let text = "La somme de " + this.amountToTransmit + "€ a bien été";
+          let text = "La somme de " + this.amountToTransmit[index] + "€ a bien été";
           text += (operation === "+") ? " ajoutée au " : " retirée du ";
           text += "porte-feuille de " + res.firstname + " " + res.name + ".";
           let textNode = document.createTextNode(text);
@@ -84,6 +90,8 @@ export class AppComponent implements OnInit {
 
             this.users[index] = res;
             // Cette modification entraîne un rerendu du DOM qui effacera automatiquement le message et réactivera les boutons
+            // On doit tout de même réinitialiser la variable amountToTransmit
+            this.amountToTransmit[index] = null;
           }, 3000);
         });
       }
@@ -91,9 +99,9 @@ export class AppComponent implements OnInit {
     
     else{
       // Si la valeur est vide, c'est que l'utilisateur n'a pas saisi de nombre, et on lui indique
-      // Mais seulement si ce message n'existe pas déjà^
+      // Mais seulement si ce message n'existe pas déjà
       let tooltip = event.target.parentNode.parentNode.lastElementChild;
-      if (!tooltip.id.includes("tooltip")) {
+      if (tooltip.childNodes.length === 0 ) {
         // On va afficher un message disant d'entrer un nombre en tooltip
         let textNode = document.createTextNode("Veuillez entrer un nombre");
         tooltip.append(textNode);
@@ -102,12 +110,12 @@ export class AppComponent implements OnInit {
     }
   }
 
-  getAmount(event:any) {
+  getAmount(event:any , index:number) {
     // Cette fonction se déclenche à la saisie par le visiteur du montant à débiter/créditer
     // Elle affecte cette valeur à la variable amountToTransmit SEULEMENT si cette variable est un nombre
     let value = parseFloat(event.target.value);
     if (!isNaN(value)){
-      this.amountToTransmit = event.target.value;
+      this.amountToTransmit[index] = event.target.value;
       // Si un tooltip avertissant d'entrer un nombre était présent, on le supprime
       let tooltip = event.target.parentNode.parentNode.lastElementChild;
       if (tooltip.childNodes.length>0){
@@ -118,7 +126,7 @@ export class AppComponent implements OnInit {
     }
     // De plus, si la valeur n'est pas un nombre, elle réinitialise amountToTransmit à null, car il suffit d'un seul caracatère non-numérique pour provoquer un bug
     else{
-      this.amountToTransmit = null;
+      this.amountToTransmit[index] = null;
     }
   }
 
