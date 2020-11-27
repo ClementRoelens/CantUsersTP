@@ -1,49 +1,53 @@
-<table>
-    <tr>
-        <th>
-            Nom
-        </th>
-        <th>
-            Prénom
-        </th>
-        <th>
-            Solde
-        </th>
-        <th id="edit_th">
-            Créditer/débiter
-        </th>
-        <th id="space">
-        </th>
-        <th id="tooltip_th">
-        </th>
-    </tr>
-    <tr *ngFor="let user of users;let index = index">
-        <td>
-            {{ user.name }}
-        </td>
-        <td>
-            {{ user.firstname }}
-        </td>
-        <td>
-            {{ user.wallet }}
-        </td>
-        <td class="edit">
-            <input (keyup)="getAmount($event,index)" type="text" #amount>
-            <button (click)="edit($event,user.id,'+',index)">
-               +
-            </button>
-            <button (click)="edit($event,user.id,'-',index)">
-                -
-            </button>
-        </td>
-        <td class="space">
-        </td>
-        <td class="tooltip">
-
-        </td>
-    </tr>
-</table>
-<h2 *ngIf="!dataReceived">Chargement...</h2>
+<section id="content">
+    <input (keyup)="filter($event)" type="text" placeholder="Utilisateur à rechercher" id="filter">
+    <table>
+        <tr>
+            <th>
+                Nom
+            </th>
+            <th>
+                Prénom
+            </th>
+            <th>
+                Solde
+            </th>
+            <th id="edit_th">
+                Créditer/débiter
+            </th>
+            <th id="space">
+            </th>
+            <th id="tooltip_th">
+            </th>
+        </tr>
+        <tr *ngFor="let user of filteredUsers ; let index = index">
+            <td>
+                {{ user.name }}
+            </td>
+            <td>
+                {{ user.firstname }}
+            </td>
+            <td>
+                {{ user.wallet }}
+            </td>
+            <td class="edit">
+                <input (keyup)="getAmount($event,index)" type="text" #amount>
+                <button (click)="edit($event,user.id,'+',index)">
+                   +
+                </button>
+                <button (click)="edit($event,user.id,'-',index)">
+                    -
+                </button>
+            </td>
+            <td class="space">
+            </td>
+            <td class="tooltip">
+    
+            </td>
+        </tr>
+    </table>
+    <h2 *ngIf="!dataReceived">Chargement...</h2>
+    
+</section>
 
 
 <router-outlet></router-outlet>

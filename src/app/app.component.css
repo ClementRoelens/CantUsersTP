@@ -1,7 +1,19 @@
+#content {
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#filter{
+    width:150px;
+    margin-bottom:10px;
+}
+
 table {
     width:750px;
-    margin-left:calc(50% - 287px);
     border-collapse: collapse;
+    position:relative;
+    left:134.5px;
 }
 
 td, th {

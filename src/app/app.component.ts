@@ -12,6 +12,7 @@ import { User } from './interfaces';
 export class AppComponent implements OnInit {
 
   users: User[] = [];
+  filteredUsers:User[] = [];
   amountToTransmit: number[] = [];
   // Notre template affichera "En chargement" tant que ce booléen sera faux, via la directive ngIf
   dataReceived : boolean = false;
@@ -37,10 +38,11 @@ export class AppComponent implements OnInit {
   }
 
   getUsers(){
-    // Les utilisateurs renvoyés par la fonction vont être affectés à la variable this.users afin de faire du binding de lecture dans le template
+    // Les utilisateurs renvoyés par la fonction vont être affectés à la variable this.users, puis à filteredUsers afin de faire du binding de lecture dans le template
     // On indique également que les données sont reçues au booléen dataReceived afin d'actualiser notre template
     this.dataService.getAllUsers().subscribe((res: User[]) => {
       this.users = res;
+      this.filteredUsers = this.users;
       this.dataReceived = true;
       this.users.forEach(user => {
         this.amountToTransmit.push(null);
@@ -53,9 +55,9 @@ export class AppComponent implements OnInit {
     // Ici, on vérifie donc que cette valeur n'est pas vide avant d'envoyer la requête
     if (this.amountToTransmit[index]) {
       // On cherche l'index de l'utilisateur correspondant (grâce à la réponse du serveur) et on va l'utiliser pour certaines opérations
-      let index = this.users.findIndex(user => user.id == userId);
+      let unfilteredIndex = this.users.findIndex(user => user.id == userId);
       // On vérifie que, dans le cas où l'opération est un débit, la porte-feuille ne soit pas négatif (l'API renverrait une erreur de toute manière)
-      if (((this.users[index].wallet - this.amountToTransmit[index]) < 0) && (operation === "-")) {
+      if (((this.users[unfilteredIndex].wallet - this.amountToTransmit[index]) < 0) && (operation === "-")) {
         // Dans ce cas, on indique cette nécessité (bien entendu seulement si le message n'est pas déjà affiché)
         let tooltip = event.target.parentNode.parentNode.lastElementChild;
         if (tooltip.childNodes.length === 0){
@@ -69,7 +71,7 @@ export class AppComponent implements OnInit {
       }
       else{
         this.dataService.editWallet(userId, operation, this.amountToTransmit[index]).subscribe((res: User) => {
-          // Une fois la requête envoyée et la réponse reçue, on modifie notre variable users et cela modifiera automatiquement le DOM
+          // Une fois la requête envoyée et la réponse reçue, on modifie notre variable users puis le filteredUser et cela modifiera automatiquement le DOM
 
           // Mais d'abord, on va désactiver les boutons car on va afficher un message dans une petite animation de 3 secondes
           let enfants = Array.from(event.target.parentNode.childNodes);
@@ -88,8 +90,9 @@ export class AppComponent implements OnInit {
           setTimeout(() => { tooltip.style.opacity = "0" }, 2000);
           setTimeout(() => {
 
-            this.users[index] = res;
-            // Cette modification entraîne un rerendu du DOM qui effacera automatiquement le message et réactivera les boutons
+            this.users[unfilteredIndex] = res;
+            // Pour rerendre le DOM et donc faire réapparaître les boutons, on réaffecte le filteredUser correspondant
+            this.filteredUsers[index] = res;
             // On doit tout de même réinitialiser la variable amountToTransmit
             this.amountToTransmit[index] = null;
           }, 3000);
@@ -130,5 +133,10 @@ export class AppComponent implements OnInit {
     }
   }
 
+  filter(event) {
+    // À l'événement keyup, ce filtre est lancé pour que la variable filteredUser contienne tous les utilisateurs dont le nom ou le prénom contient la valeur entrée
+    this.filteredUsers = this.users.filter(
+      user => (user.firstname.toLowerCase().includes(event.target.value.toLowerCase()) || user.name.toLowerCase().includes(event.target.value.toLowerCase()) ));
+  }
   
 }
